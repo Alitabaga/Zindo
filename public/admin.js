@@ -66,7 +66,11 @@ async function api(url, opts = {}) {
   });
   const data = await r.json().catch(() => ({}));
   if (r.status === 401 && !url.endsWith('/login')) { showLogin(); throw new Error('Session expirée'); }
-  if (!r.ok) throw new Error(data.error || 'Erreur');
+  if (!r.ok) {
+    if (data.error) throw new Error(data.error);
+    if (r.status === 404) throw new Error('Cette fonction n\'est pas encore active sur le serveur : redémarrez le site dans alwaysdata (Web → Sites → Redémarrer).');
+    throw new Error(`Erreur du serveur (${r.status}). Réessayez dans un instant.`);
+  }
   return data;
 }
 
