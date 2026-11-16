@@ -653,3 +653,46 @@ th { color: var(--muted); font-weight: 600; font-size: .75rem; text-transform: u
 @media (min-width: 961px) and (max-width: 1180px) {
   .cart-bar { left: calc(var(--side-w) + 1rem); max-width: 520px; margin: 0 auto; right: 1rem; }
 }
+
+/* =====================================================================
+   ADMIN SUR TÉLÉPHONE : barre du haut + onglets fixes en bas
+   ===================================================================== */
+.admin-topbar { display: none; }
+@media (max-width: 960px) {
+  .admin-topbar {
+    display: flex; align-items: center; gap: .5rem; position: sticky; top: 0; z-index: 40;
+    padding: calc(.55rem + env(safe-area-inset-top)) .8rem .55rem; background: linear-gradient(90deg, #3f9a35, #2c6b2f); color: #fff;
+  }
+  .admin-topbar-brand { display: flex; align-items: center; gap: .55rem; color: #fff; text-decoration: none; margin-right: auto; font-family: var(--serif); font-size: 1.25rem; }
+  .admin-topbar-brand img { width: 40px; height: 40px; border-radius: 50%; background: #fff; padding: 2px; object-fit: contain; }
+  .admin-topbar-brand small { font-family: var(--sans); font-size: .72rem; opacity: .8; margin-left: .2rem; }
+  .admin-topbar .btn.light { background: rgba(255, 255, 255, .16); color: #fff; border: 1px solid rgba(255, 255, 255, .4); }
+
+  /* Le menu latéral devient une barre d'onglets fixe en bas */
+  .admin-layout .sidebar {
+    position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: auto; width: auto; z-index: 45;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); overflow: visible; box-shadow: 0 -6px 20px rgba(0, 0, 0, .15);
+    background: linear-gradient(90deg, #3f9a35, #2c6b2f) !important;
+  }
+  .admin-layout .sidebar > .brand, .admin-layout .sidebar > .tricolor, .admin-layout .side-actions { display: none !important; }
+  .admin-layout .tabs { flex-direction: row; width: 100%; gap: 2px; }
+  .admin-layout .tabs button {
+    flex: 1 1 0; min-width: 0; flex-direction: column; gap: 3px; padding: 7px 2px; font-size: .66rem; line-height: 1.1;
+    border-radius: 12px; justify-content: center; align-items: center; text-align: center; white-space: nowrap; position: relative;
+  }
+  .admin-layout .tabs button .ico { width: 22px; height: 22px; }
+  .admin-layout .tabs button.active { box-shadow: none; }
+  .admin-layout .tab-badge { position: absolute; top: 2px; right: 50%; margin-right: -22px; min-width: 18px; height: 18px; font-size: .65rem; }
+  .admin-main { padding: 1rem .8rem calc(96px + env(safe-area-inset-bottom)); }
+  .toast { bottom: calc(92px + env(safe-area-inset-bottom)); }
+
+  /* Boutons et formulaires : plus de débordement */
+  .admin-main .btn { white-space: normal; text-align: center; }
+  .prod-row > .row { flex: 1 1 100% !important; }
+  .prod-row > .row .btn { flex: 1; }
+}
+@media (max-width: 600px) {
+  .admin-main .panel > .row > *, .admin-main .panel .row > div { flex: 1 1 100%; }
+  .admin-main .panel { padding: 1rem; }
+  .admin-main .map.tall { height: 340px; }
+}

@@ -2,16 +2,22 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Zindo — Administration</title>
-  <meta name="theme-color" content="#f8f5ee">
+  <meta name="theme-color" content="#2c6b2f">
+  <link rel="manifest" href="/admin.webmanifest">
+  <link rel="apple-touch-icon" href="/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Zindo Admin">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap">
   <link rel="icon" href="/logo.svg" type="image/svg+xml">
   <meta name="robots" content="noindex">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="/style.css?v=3">
+  <link rel="stylesheet" href="/style.css?v=5">
 </head>
 <body class="admin">
   <!-- Connexion -->
@@ -27,6 +33,11 @@
   </section>
 
   <div id="app" class="admin-layout hidden">
+    <header class="admin-topbar">
+      <a href="/admin" class="admin-topbar-brand"><img src="/logo.png" alt="" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='/logo.svg'}else{this.remove()}"><span>Zindo <small>Admin</small></span></a>
+      <a href="/" class="btn small light" target="_blank">Boutique ↗</a>
+      <button class="btn small light" id="logoutBtn2" aria-label="Déconnexion">Quitter</button>
+    </header>
     <aside class="sidebar">
       <a href="/admin" class="brand" aria-label="Zindo administration">
         <img src="/logo.png" alt="Zindo" class="brand-logo" style="max-width:140px" onload="document.body.classList.add('has-logo')" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='/logo.svg'}else{this.remove()}">
@@ -200,6 +211,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/admin.js?v=4"></script>
+  <script src="/admin.js?v=5"></script>
 </body>
 </html>

@@ -112,6 +112,7 @@ $('#loginForm').onsubmit = async (e) => {
     start();
   } catch (err) { $('#loginError').textContent = err.message; }
 };
+$('#logoutBtn2').onclick = () => $('#logoutBtn').click();
 $('#logoutBtn').onclick = async () => {
   await api('/api/admin/logout', { method: 'POST' }).catch(() => {});
   localStorage.removeItem('zindo_admin_token'); token = null; showLogin();
@@ -123,6 +124,7 @@ let currentTab = 'orders';
 document.querySelectorAll('.tabs button').forEach((b) => (b.onclick = () => openTab(b.dataset.tab)));
 function openTab(tab) {
   currentTab = tab;
+  window.scrollTo({ top: 0 });
   document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
   document.querySelectorAll('[data-panel]').forEach((p) => p.classList.toggle('hidden', p.dataset.panel !== tab));
   loaders[tab]?.();
