@@ -140,6 +140,7 @@
               <option value="365">12 derniers mois</option>
             </select></div>
         </div>
+        <p class="muted" id="sRetention" style="margin:-.4rem 0 1rem"></p>
         <div class="kpis" id="sKpis"></div>
         <div class="panel"><h3>Ventes par jour de livraison</h3><div id="sChart"></div></div>
         <div class="row" style="align-items:flex-start">
@@ -213,6 +214,16 @@
             <button type="button" class="btn" id="pwSave" style="margin-top:.6rem">Changer le mot de passe</button>
           </div>
           <div class="panel">
+            <h3>Conservation des données</h3>
+            <p class="muted" style="margin-top:0">Les commandes et messages plus anciens que cette durée sont supprimés automatiquement (noms, téléphones, positions).
+              Les <b>totaux de ventes</b> restent dans l'onglet Ventes. Les produits, photos, paramètres et le mot de passe ne sont jamais supprimés.</p>
+            <div class="row" style="align-items:flex-end">
+              <div style="max-width:260px"><label for="s_retention_days">Garder les données (jours, 0 = toujours)</label><input id="s_retention_days" type="number" min="0" max="365"></div>
+              <div style="flex:0 0 auto"><button type="button" class="btn secondary" id="purgeBtn">🧹 Nettoyer maintenant</button></div>
+            </div>
+            <p class="muted" id="purgeInfo" style="margin-bottom:0"></p>
+          </div>
+          <div class="panel">
             <h3>Sauvegarde</h3>
             <p class="muted" style="margin-top:0">Téléchargez une copie de toutes vos données (produits, commandes, messages, paramètres) sur votre ordinateur. À faire régulièrement, par exemple chaque semaine.</p>
             <button type="button" class="btn secondary" id="backupBtn">⬇️ Télécharger une sauvegarde</button>
@@ -225,6 +236,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/admin.js?v=7"></script>
+  <script src="/admin.js?v=8"></script>
 </body>
 </html>

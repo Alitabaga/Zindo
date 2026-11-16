@@ -122,7 +122,16 @@ Puis panneau → **Web → Sites → (votre site) → Redémarrer**.
   cd zindo && npm run reset-password
   ```
 
-## 6. Sauvegardes
+## 6. Conservation des données (nettoyage automatique)
+
+Par défaut, les **commandes et messages de plus de 5 jours** sont supprimés automatiquement (au démarrage puis toutes les 6 heures) : noms, téléphones, positions.
+- **Conservés** : les totaux de ventes par jour et par produit (onglet Ventes), les produits et leurs photos, les paramètres, le mot de passe admin, les commandes à venir.
+- **Supprimés aussi** : les photos qui ne servent plus à aucun produit, les connexions expirées.
+- Réglage : Admin → Paramètres → *Conservation des données* (0 = tout garder). Bouton « Nettoyer maintenant ».
+
+> Téléchargez une sauvegarde avant si vous voulez garder une trace des anciennes commandes.
+
+## 7. Sauvegardes
 
 - **Admin → Paramètres → Télécharger une sauvegarde** : copie complète de la base (produits, commandes, messages, paramètres) sur votre ordinateur. À faire chaque semaine.
 - alwaysdata garde aussi ses propres sauvegardes pendant quelques jours.
@@ -131,7 +140,7 @@ Puis panneau → **Web → Sites → (votre site) → Redémarrer**.
 
 ---
 
-## 7. GitHub
+## 8. GitHub
 
 Ne sont **jamais** envoyés sur GitHub (voir `.gitignore`) :
 - `data/` : vos commandes, les noms et numéros de vos clients, les photos ;

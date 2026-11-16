@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { db, tx, getSettings, saveSettings, DEFAULT_SETTINGS, UPLOAD_DIR } from './lib/db.js';
 import { deliveryFee, planRoute, roadKm } from './lib/geo.js';
 import { SLOTS, slotHour, availableSlots, nextDeliveryDate, localDate, pad } from './lib/slots.js';
+import { purgeOldData } from './lib/purge.js';
 
 process.env.TZ ||= 'Africa/Ouagadougou';
 
@@ -434,33 +435,44 @@ app.get('/api/admin/stats', (req, res) => {
   const slots = availableSlots(getSettings());
   const toStr = slots[slots.length - 1].date;
   const W = `delivery_date BETWEEN ? AND ? AND status != 'annulee'`;
+  const R = [fromStr, toStr];
 
-  const totals = db.prepare(`SELECT COUNT(*) AS orders, COALESCE(SUM(subtotal),0) AS sales,
-      COALESCE(SUM(delivery_fee),0) AS fees, COALESCE(SUM(total),0) AS total,
-      COUNT(DISTINCT phone) AS customers,
-      COALESCE(SUM(CASE WHEN status='livree' THEN total END),0) AS collected
-      FROM orders WHERE ${W}`).get(fromStr, toStr);
+  // Commandes détaillées récentes + totaux conservés des jours plus anciens
+  const LIVE = `SELECT delivery_date AS day, slot, COUNT(*) AS orders, SUM(subtotal) AS sales, SUM(delivery_fee) AS fees,
+      SUM(total) AS total, SUM(CASE WHEN status='livree' THEN total ELSE 0 END) AS collected
+      FROM orders WHERE ${W} GROUP BY delivery_date, slot`;
+  const SUMM = `SELECT day, slot, orders, sales, fees, total, collected FROM daily_summary WHERE day BETWEEN ? AND ?`;
+  const ALL = `(${LIVE} UNION ALL ${SUMM})`;
+
+  const totals = db.prepare(`SELECT COALESCE(SUM(orders),0) AS orders, COALESCE(SUM(sales),0) AS sales,
+      COALESCE(SUM(fees),0) AS fees, COALESCE(SUM(total),0) AS total, COALESCE(SUM(collected),0) AS collected FROM ${ALL}`)
+    .get(...R, ...R);
+  totals.customers = db.prepare(`SELECT COUNT(DISTINCT phone) AS n FROM orders WHERE ${W}`).get(...R).n;
   totals.avgBasket = totals.orders ? Math.round(totals.sales / totals.orders) : 0;
 
-  const byDay = db.prepare(`SELECT delivery_date AS day, COUNT(*) AS orders, SUM(subtotal) AS sales
-      FROM orders WHERE ${W} GROUP BY delivery_date ORDER BY delivery_date`).all(fromStr, toStr);
+  const byDay = db.prepare(`SELECT day, SUM(orders) AS orders, SUM(sales) AS sales FROM ${ALL} GROUP BY day ORDER BY day`)
+    .all(...R, ...R);
+  const bySlot = db.prepare(`SELECT slot, SUM(orders) AS orders, SUM(total) AS total FROM ${ALL} GROUP BY slot`)
+    .all(...R, ...R);
 
-  const topProducts = db.prepare(`SELECT oi.name, SUM(oi.quantity) AS qty, SUM(oi.line_total) AS sales
-      FROM order_items oi JOIN orders o ON o.id = oi.order_id
-      WHERE o.delivery_date BETWEEN ? AND ? AND o.status != 'annulee'
-      GROUP BY oi.name ORDER BY sales DESC LIMIT 10`).all(fromStr, toStr);
+  const topProducts = db.prepare(`SELECT name, SUM(qty) AS qty, SUM(sales) AS sales FROM (
+      SELECT oi.name, oi.quantity AS qty, oi.line_total AS sales FROM order_items oi JOIN orders o ON o.id = oi.order_id
+        WHERE o.delivery_date BETWEEN ? AND ? AND o.status != 'annulee'
+      UNION ALL SELECT name, qty, sales FROM product_summary WHERE day BETWEEN ? AND ?)
+      GROUP BY name ORDER BY sales DESC LIMIT 10`).all(...R, ...R);
 
   const byStatus = db.prepare(`SELECT status, COUNT(*) AS n FROM orders
-      WHERE delivery_date BETWEEN ? AND ? GROUP BY status`).all(fromStr, toStr);
+      WHERE delivery_date BETWEEN ? AND ? GROUP BY status`).all(...R);
 
   const topCustomers = db.prepare(`SELECT customer_name AS name, phone, COUNT(*) AS orders, SUM(total) AS total
-      FROM orders WHERE ${W} GROUP BY phone ORDER BY total DESC LIMIT 5`).all(fromStr, toStr);
+      FROM orders WHERE ${W} GROUP BY phone ORDER BY total DESC LIMIT 5`).all(...R);
 
-  const bySlot = db.prepare(`SELECT slot, COUNT(*) AS orders, COALESCE(SUM(total),0) AS total
-      FROM orders WHERE ${W} GROUP BY slot`).all(fromStr, toStr);
-
-  res.json({ from: fromStr, to: toStr, totals, byDay, topProducts, byStatus, topCustomers, bySlot });
+  res.json({ from: fromStr, to: toStr, totals, byDay, topProducts, byStatus, topCustomers, bySlot,
+    retentionDays: getSettings().retention_days });
 });
+
+// ---------- Nettoyage des anciennes données ----------
+app.post('/api/admin/purge', (req, res) => res.json(purgeOldData()));
 
 // ---------- Messages du service client ----------
 app.get('/api/admin/messages', (req, res) => {
@@ -516,11 +528,25 @@ app.put('/api/admin/settings', (req, res) => {
     return bad(res, 'Heure invalide.');
   }
   if (merged.speed_kmh <= 0) return bad(res, 'Vitesse invalide.');
+  if (merged.retention_days > 365) return bad(res, 'Durée de conservation : 365 jours maximum.');
+  if (merged.retention_days > 0) merged.retention_days = out.retention_days = Math.floor(merged.retention_days);
   saveSettings(out);
   res.json(getSettings());
 });
 
 app.get('/admin', (req, res) => res.set('Cache-Control', 'no-cache').sendFile(path.join(ROOT, 'public', 'admin.html')));
+
+// Nettoyage automatique : au démarrage puis toutes les 6 heures
+function runPurge() {
+  try {
+    const r = purgeOldData();
+    if (!r.skipped && (r.orders || r.messages || r.photos)) {
+      console.log(`🧹 Nettoyage : ${r.orders} commande(s), ${r.messages} message(s), ${r.photos} photo(s) supprimés (avant le ${r.cutoff})`);
+    }
+  } catch (e) { console.error('Nettoyage impossible :', e.message); }
+}
+runPurge();
+setInterval(runPurge, 6 * 3600e3).unref();
 
 app.listen(PORT, HOST, () => {
   console.log(`Zindo en ligne : http://localhost:${PORT}  (admin : http://localhost:${PORT}/admin)`);

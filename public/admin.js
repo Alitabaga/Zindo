@@ -405,6 +405,9 @@ loaders.products = loadProducts;
 // ======================================================================
 async function loadStats() {
   const s = await api(`/api/admin/stats?days=${$('#sDays').value}`);
+  $('#sRetention').textContent = s.retentionDays
+    ? `Le détail des commandes (clients, meilleurs clients) est gardé ${s.retentionDays} jours ; les totaux de ventes, eux, restent.`
+    : '';
   const t = s.totals;
   $('#sKpis').innerHTML = [
     ['Chiffre d\'affaires produits', fmt(t.sales)],
@@ -444,7 +447,7 @@ loaders.stats = loadStats;
 // ======================================================================
 const TEXT_FIELDS = ['shop_name', 'shop_phone', 'country_code'];
 const SET_FIELDS = ['shop_name', 'shop_phone', 'country_code', 'delivery_fee', 'max_km',
-  'start_hour', 'evening_start_hour', 'same_day_evening_cutoff', 'cutoff_hour', 'minutes_per_stop', 'speed_kmh'];
+  'start_hour', 'evening_start_hour', 'same_day_evening_cutoff', 'cutoff_hour', 'minutes_per_stop', 'speed_kmh', 'retention_days'];
 let setMap, shopMarker, shopPoint = null;
 
 function placeShop(lat, lng) {
@@ -506,6 +509,16 @@ $('#pwSave').onclick = async () => {
     toast(`Mot de passe changé ✅${r.otherSessionsClosed ? ` (${r.otherSessionsClosed} autre(s) appareil(s) déconnecté(s))` : ''}`);
   } catch (err) { $('#pwError').textContent = err.message; }
   finally { $('#pwSave').disabled = false; }
+};
+
+$('#purgeBtn').onclick = async () => {
+  const days = Number($('#s_retention_days').value);
+  if (!days) { $('#purgeInfo').textContent = 'La conservation est réglée sur « toujours » : rien à supprimer.'; return; }
+  if (!confirm(`Supprimer définitivement les commandes et messages de plus de ${days} jours ?\n(Pensez à télécharger une sauvegarde avant si besoin.)`)) return;
+  // On enregistre d'abord la durée choisie
+  await api('/api/admin/settings', { method: 'PUT', body: JSON.stringify({ retention_days: days }) });
+  const r = await api('/api/admin/purge', { method: 'POST' });
+  $('#purgeInfo').textContent = `✅ Supprimé : ${r.orders} commande(s), ${r.messages} message(s), ${r.photos} photo(s) inutilisée(s). Les totaux de ventes sont conservés.`;
 };
 
 $('#backupBtn').onclick = async () => {
