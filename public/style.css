@@ -696,3 +696,29 @@ th { color: var(--muted); font-weight: 600; font-size: .75rem; text-transform: u
   .admin-main .panel { padding: 1rem; }
   .admin-main .map.tall { height: 340px; }
 }
+
+/* =====================================================================
+   PRODUITS SUR TÉLÉPHONE : liste compacte (vignette + nom + prix + bouton)
+   ===================================================================== */
+@media (max-width: 600px) {
+  .shop-layout .grid, .grid { grid-template-columns: 1fr; gap: .65rem; }
+  .card {
+    flex-direction: row; align-items: center; gap: .85rem; background: var(--surface);
+    border: 1px solid var(--line); border-radius: 16px; padding: .6rem .7rem .6rem .6rem; box-shadow: 0 1px 3px rgba(23, 37, 28, .04);
+  }
+  .card .img { width: 78px; height: 78px; flex: 0 0 78px; aspect-ratio: auto; border-radius: 12px; font-size: 2.3rem; }
+  .card .in-cart { display: none; }
+  .card .body { padding: 0; gap: .1rem; min-width: 0; }
+  .card .name { font-size: 1.02rem; font-family: var(--sans); font-weight: 600; }
+  .card .desc { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; font-size: .8rem; }
+  .card .foot { padding-top: .35rem; flex-wrap: nowrap; }
+  .card .price { font-size: .98rem; }
+  .card .price br { display: none; }
+  .card .price small { margin-left: .2rem; }
+  .add-btn { width: 38px; height: 38px; font-size: 1.35rem; flex: 0 0 38px; }
+  .card .qty button { width: 30px; height: 30px; }
+  .skeleton { aspect-ratio: auto; height: 96px; }
+}
+@media (max-width: 960px) {
+  body.site .sidebar:not(.open) { box-shadow: none; }
+}
