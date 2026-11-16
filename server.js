@@ -246,13 +246,27 @@ const loginAttempts = new Map();
 const sha = (s) => crypto.createHash('sha256').update(String(s)).digest();
 const SESSION_DAYS = 30;
 
+// Mot de passe admin : celui choisi dans l'admin (haché en base) sinon celui du fichier .env
+const PW_KEY = 'admin_password_hash';
+function hashPassword(pw) {
+  const salt = crypto.randomBytes(16);
+  return `${salt.toString('hex')}:${crypto.scryptSync(String(pw), salt, 32).toString('hex')}`;
+}
+function checkPassword(pw) {
+  const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(PW_KEY);
+  if (!row) return crypto.timingSafeEqual(sha(pw), sha(ADMIN_PASSWORD));
+  const [salt, hash] = JSON.parse(row.value).split(':');
+  const test = crypto.scryptSync(String(pw ?? ''), Buffer.from(salt, 'hex'), 32);
+  return crypto.timingSafeEqual(test, Buffer.from(hash, 'hex'));
+}
+
 app.post('/api/admin/login', (req, res) => {
   const ip = req.ip;
   const a = loginAttempts.get(ip) || { n: 0, t: Date.now() };
   if (Date.now() - a.t > 15 * 60e3) { a.n = 0; a.t = Date.now(); }
   if (a.n >= 10) return bad(res, 'Trop de tentatives, réessayez dans 15 minutes.', 429);
 
-  if (!crypto.timingSafeEqual(sha(req.body?.password), sha(ADMIN_PASSWORD))) {
+  if (!checkPassword(req.body?.password)) {
     a.n++; loginAttempts.set(ip, a);
     return bad(res, 'Mot de passe incorrect.', 401);
   }
@@ -270,6 +284,28 @@ function requireAdmin(req, res, next) {
   next();
 }
 app.use('/api/admin', (req, res, next) => (req.path === '/login' ? next() : requireAdmin(req, res, next)));
+
+// Changer le mot de passe admin depuis l'admin
+const pwAttempts = new Map();
+app.post('/api/admin/password', (req, res) => {
+  const n = pwAttempts.get(req.token) || 0;
+  if (n >= 5) return bad(res, 'Trop de tentatives. Déconnectez-vous puis reconnectez-vous.', 429);
+  const { current, next } = req.body || {};
+  if (!checkPassword(current)) {
+    pwAttempts.set(req.token, n + 1);
+    return bad(res, 'Mot de passe actuel incorrect.');
+  }
+  const pw = String(next || '');
+  if (pw.length < 10) return bad(res, 'Le nouveau mot de passe doit faire au moins 10 caractères.');
+  if (pw.length > 200) return bad(res, 'Mot de passe trop long.');
+  if (checkPassword(pw)) return bad(res, "Le nouveau mot de passe doit être différent de l'ancien.");
+  db.prepare('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value')
+    .run(PW_KEY, JSON.stringify(hashPassword(pw)));
+  // Déconnecte tous les autres appareils
+  const out = db.prepare('DELETE FROM sessions WHERE token != ?').run(req.token).changes;
+  pwAttempts.delete(req.token);
+  res.json({ ok: true, otherSessionsClosed: out });
+});
 
 app.post('/api/admin/logout', (req, res) => {
   db.prepare('DELETE FROM sessions WHERE token = ?').run(req.token);

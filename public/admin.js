@@ -486,6 +486,24 @@ $('#setForm').onsubmit = async (e) => {
 };
 loaders.settings = loadSettings;
 
+// Changer le mot de passe admin
+$('#pwShow').onchange = (e) => ['#pwCurrent', '#pwNew', '#pwConfirm'].forEach((s) => ($(s).type = e.target.checked ? 'text' : 'password'));
+$('#pwSave').onclick = async () => {
+  $('#pwError').textContent = '';
+  const current = $('#pwCurrent').value;
+  const next = $('#pwNew').value;
+  if (!current) { $('#pwError').textContent = 'Entrez le mot de passe actuel.'; return; }
+  if (next.length < 10) { $('#pwError').textContent = 'Le nouveau mot de passe doit faire au moins 10 caractères.'; return; }
+  if (next !== $('#pwConfirm').value) { $('#pwError').textContent = 'Les deux nouveaux mots de passe ne sont pas identiques.'; return; }
+  $('#pwSave').disabled = true;
+  try {
+    const r = await api('/api/admin/password', { method: 'POST', body: JSON.stringify({ current, next }) });
+    ['#pwCurrent', '#pwNew', '#pwConfirm'].forEach((s) => ($(s).value = ''));
+    toast(`Mot de passe changé ✅${r.otherSessionsClosed ? ` (${r.otherSessionsClosed} autre(s) appareil(s) déconnecté(s))` : ''}`);
+  } catch (err) { $('#pwError').textContent = err.message; }
+  finally { $('#pwSave').disabled = false; }
+};
+
 $('#backupBtn').onclick = async () => {
   const b = $('#backupBtn');
   b.disabled = true;

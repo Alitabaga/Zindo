@@ -113,7 +113,16 @@ Puis panneau → **Web → Sites → (votre site) → Redémarrer**.
 
 ---
 
-## 5. Sauvegardes
+## 5. Mot de passe admin
+
+- **Changer** : Admin → Paramètres → *Mot de passe admin*. Entrez l'actuel, puis le nouveau deux fois (10 caractères minimum). Les autres appareils connectés sont déconnectés.
+- **Oublié ?** Le mot de passe d'origine (celui de `ADMIN_PASSWORD` dans le fichier `.env` du serveur) peut être remis :
+  ```
+  ssh NOMDUCOMPTE@ssh-NOMDUCOMPTE.alwaysdata.net
+  cd zindo && npm run reset-password
+  ```
+
+## 6. Sauvegardes
 
 - **Admin → Paramètres → Télécharger une sauvegarde** : copie complète de la base (produits, commandes, messages, paramètres) sur votre ordinateur. À faire chaque semaine.
 - alwaysdata garde aussi ses propres sauvegardes pendant quelques jours.
@@ -122,7 +131,7 @@ Puis panneau → **Web → Sites → (votre site) → Redémarrer**.
 
 ---
 
-## 6. GitHub
+## 7. GitHub
 
 Ne sont **jamais** envoyés sur GitHub (voir `.gitignore`) :
 - `data/` : vos commandes, les noms et numéros de vos clients, les photos ;

@@ -198,6 +198,20 @@
               <div><label for="s_speed_kmh">Vitesse moyenne (km/h)</label><input id="s_speed_kmh" type="number" min="1"></div>
             </div>
           </div>
+          <div class="panel" id="pwPanel">
+            <h3>Mot de passe admin</h3>
+            <p class="muted" style="margin-top:0">Au moins 10 caractères. Les autres appareils connectés seront déconnectés.</p>
+            <div class="row">
+              <div><label for="pwCurrent">Mot de passe actuel</label><input type="password" id="pwCurrent" autocomplete="current-password"></div>
+            </div>
+            <div class="row">
+              <div><label for="pwNew">Nouveau mot de passe</label><input type="password" id="pwNew" autocomplete="new-password" minlength="10"></div>
+              <div><label for="pwConfirm">Confirmer le nouveau</label><input type="password" id="pwConfirm" autocomplete="new-password" minlength="10"></div>
+            </div>
+            <label style="font-weight:400;display:flex;gap:.4rem;align-items:center"><input type="checkbox" id="pwShow" style="width:auto"> Afficher les mots de passe</label>
+            <div class="error" id="pwError"></div>
+            <button type="button" class="btn" id="pwSave" style="margin-top:.6rem">Changer le mot de passe</button>
+          </div>
           <div class="panel">
             <h3>Sauvegarde</h3>
             <p class="muted" style="margin-top:0">Téléchargez une copie de toutes vos données (produits, commandes, messages, paramètres) sur votre ordinateur. À faire régulièrement, par exemple chaque semaine.</p>
@@ -211,6 +225,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/admin.js?v=5"></script>
+  <script src="/admin.js?v=6"></script>
 </body>
 </html>
