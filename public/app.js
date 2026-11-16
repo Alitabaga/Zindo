@@ -365,27 +365,46 @@ $('#checkoutForm').onsubmit = async (e) => {
     cart = {}; saveCart(); renderCatalog(); renderCart();
     $('#cNote').value = '';
     $('#checkout').close();
+    // Message de commande complet, envoyé au WhatsApp de la boutique
+    const slotTxt = `${fmtDate(r.deliveryDate)} ${r.slot === 'soir' ? 'soir' : 'matin'} (dès ${r.startHour}h)`;
+    const waText =
+      `🛒 NOUVELLE COMMANDE ${r.code}\n` +
+      `Bonjour ${config.shopName}, je suis ${body.name.trim()} (${body.phone.trim()}).\n\n` +
+      ordered.map((l) => `• ${l.qty} × ${l.name} — ${fmt(l.price * l.qty)}`).join('\n') +
+      `\n\nSous-total : ${fmt(r.subtotal)}\nLivraison : ${fmt(r.deliveryFee)}\n*Total : ${fmt(r.total)}*` +
+      `\n\n📅 Livraison : ${slotTxt}` +
+      `\n📍 Repère : ${body.address || '-'}` +
+      (body.note ? `\n📝 Remarque : ${body.note}` : '') +
+      `\n🗺️ Position : https://maps.google.com/?q=${body.lat},${body.lng}`;
+    const waUrl = config.shopPhone ? shopWa(waText) : null;
+
     $('#successBody').innerHTML = `
       <div class="success-hero"><div class="check">✓</div></div>
       <div class="dlg-body" style="text-align:center">
       <h2 style="margin-top:.6rem">Merci, c'est commandé ! 🎉</h2>
-      <p>Votre code de suivi :</p>
-      <p><span class="code">${esc(r.code)}</span></p>
-      <p>Total à payer à la livraison : <b>${fmt(r.total)}</b><br>
+      ${waUrl ? `<div class="wa-auto" id="waAuto">
+          <div class="spinner"></div>
+          <div><b>Ouverture de WhatsApp…</b><br><span class="muted">Votre commande est déjà écrite : appuyez simplement sur <b>Envoyer</b> ➤</span></div>
+        </div>
+        <p><a class="btn block whatsapp xl" id="waSend" href="${esc(waUrl)}">💬 Envoyer ma commande sur WhatsApp</a></p>` : ''}
+      <p>Votre code de suivi : <span class="code">${esc(r.code)}</span></p>
+      <p>Total à payer à la livraison : <b>${fmt(r.total)}</b>
          <span class="muted">(dont livraison ${fmt(r.deliveryFee)})</span></p>
-      <p>${SLOT_ICON[r.slot]} Livraison <b>${esc(fmtDate(r.deliveryDate))} ${r.slot === 'soir' ? 'soir' : 'matin'}</b>, à partir de <b>${r.startHour}h</b>.</p>
-      ${config.shopPhone ? `<p><a class="btn block whatsapp xl" target="_blank" rel="noopener" href="${esc(shopWa(
-        `Bonjour ${config.shopName}, je suis ${body.name.trim()} (${body.phone.trim()}).\n` +
-        `Je viens de passer la commande ${r.code} :\n` +
-        ordered.map((l) => `• ${l.qty} × ${l.name}`).join('\n') +
-        `\nLivraison : ${fmtDate(r.deliveryDate)} ${r.slot === 'soir' ? 'soir' : 'matin'} (dès ${r.startHour}h)` +
-        `\nTotal : ${fmt(r.total)}\nClient : ${body.name.trim()} — ${body.phone.trim()}\nRepère : ${body.address || '-'}\n` +
-        `Position : https://maps.google.com/?q=${body.lat},${body.lng}`))}">💬 Envoyer ma commande sur WhatsApp</a></p>` : ''}
+      <p>${SLOT_ICON[r.slot]} Livraison <b>${esc(slotTxt)}</b>.</p>
       <button class="btn secondary" data-close>Fermer</button>
       ${config.shopPhone ? `<p class="muted" style="margin-top:1rem">Une question ? Appelez-nous au <a href="tel:+${intlPhone(config.shopPhone, config.countryCode)}">${esc(config.shopPhone)}</a></p>` : ''}
       </div>`;
     $('#successBody [data-close]').onclick = () => $('#success').close();
     $('#success').showModal();
+    if (waUrl) {
+      // On garde la commande pour l'afficher au retour de WhatsApp
+      sessionStorage.setItem('zindo_wa_pending', JSON.stringify({ code: r.code, total: r.total, url: waUrl, at: Date.now() }));
+      // Ouverture automatique de WhatsApp vers le numéro de la boutique
+      setTimeout(() => {
+        $('#waAuto')?.classList.add('done');
+        window.location.href = waUrl;
+      }, 1800);
+    }
     $('#trackCode').value = r.code; $('#trackPhone').value = body.phone;
   } catch (err) {
     $('#coError').textContent = err.message;
@@ -438,6 +457,19 @@ document.querySelectorAll('.reveal').forEach((el, i) => {
   io ? io.observe(el) : el.classList.add('in');
 });
 
+// Retour sur le site après WhatsApp : on confirme la commande
+function showWaReturn() {
+  const p = JSON.parse(sessionStorage.getItem('zindo_wa_pending') || 'null');
+  if (!p || Date.now() - p.at > 2 * 3600e3) return;
+  const box = document.createElement('div');
+  box.className = 'wa-return';
+  box.innerHTML = `<div><b>✅ Commande ${esc(p.code)} enregistrée</b> · ${fmt(p.total)}<br>
+    <span class="muted">Le message WhatsApp n'est pas parti ?</span> <a href="${esc(p.url)}">Le renvoyer</a></div>
+    <button class="close" aria-label="Fermer">×</button>`;
+  box.querySelector('button').onclick = () => { box.remove(); sessionStorage.removeItem('zindo_wa_pending'); };
+  document.body.append(box);
+}
+
 // ---------- démarrage ----------
 (async function init() {
   try {
@@ -456,6 +488,7 @@ document.querySelectorAll('.reveal').forEach((el, i) => {
   if (me.phone) $('#mPhone').value = me.phone;
   renderBanner();
   renderHeroVisual();
+  showWaReturn();
   renderCatalog();
   renderCart();
 })();

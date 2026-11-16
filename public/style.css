@@ -722,3 +722,16 @@ th { color: var(--muted); font-weight: 600; font-size: .75rem; text-transform: u
 @media (max-width: 960px) {
   body.site .sidebar:not(.open) { box-shadow: none; }
 }
+
+/* Ouverture automatique de WhatsApp après la commande */
+.wa-auto { display: flex; gap: .8rem; align-items: center; text-align: left; background: #e9f9ef; border: 1px solid #bfe9cf; border-radius: 14px; padding: .8rem 1rem; margin: .8rem 0; }
+.wa-auto .spinner { width: 26px; height: 26px; flex: 0 0 26px; border-radius: 50%; border: 3px solid #bfe9cf; border-top-color: #1f9d55; animation: spin .8s linear infinite; }
+.wa-auto.done .spinner { animation: none; border-color: #1f9d55; }
+.wa-return {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 1rem; z-index: 70; width: min(520px, calc(100% - 2rem));
+  background: #fff; border: 1px solid #bfe9cf; border-left: 5px solid #1f9d55; border-radius: 14px; padding: .8rem 1rem;
+  box-shadow: var(--shadow-lg); display: flex; gap: .8rem; align-items: flex-start; justify-content: space-between; font-size: .92rem;
+}
+.wa-return a { color: #1f9d55; font-weight: 700; }
+.btn.whatsapp, .btn.whatsapp.xl { background: #1f9d55; box-shadow: 0 10px 24px rgba(31, 157, 85, .3); white-space: normal; line-height: 1.25; }
+.btn.whatsapp:hover, .btn.whatsapp.xl:hover { background: #188546; }
