@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" role="img" aria-label="Zindo — Fraîcheur et naturel">
+  <!-- Reconstitution vectorielle du logo Zindo (remplacée automatiquement par public/logo.png s'il existe) -->
+  <defs>
+    <path id="leaf" d="M0 0 C 8 -16 34 -18 46 0 C 34 18 8 16 0 0 Z"/>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5cb33f"/>
+      <stop offset="1" stop-color="#3f9a35"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Cercle en liane -->
+  <path d="M 150 120 A 205 205 0 1 0 452 122" fill="none" stroke="#7cc04b" stroke-width="7" stroke-linecap="round"/>
+  <path d="M 452 122 A 205 205 0 0 0 360 62" fill="none" stroke="#7cc04b" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Feuilles le long de la liane -->
+  <g fill="#6cbb43">
+    <use href="#leaf" transform="translate(150 120) rotate(-130) scale(1.1)"/>
+    <use href="#leaf" transform="translate(112 175) rotate(-150)"/>
+    <use href="#leaf" transform="translate(98 245) rotate(-200) scale(.9)"/>
+    <use href="#leaf" transform="translate(112 320) rotate(150) scale(.85)"/>
+    <use href="#leaf" transform="translate(455 125) rotate(-60) scale(1.1)"/>
+    <use href="#leaf" transform="translate(492 185) rotate(-30)"/>
+    <use href="#leaf" transform="translate(505 255) rotate(15) scale(.9)"/>
+    <use href="#leaf" transform="translate(490 330) rotate(35) scale(.85)"/>
+    <use href="#leaf" transform="translate(300 458) rotate(-35) scale(1.6)"/>
+    <use href="#leaf" transform="translate(262 50) rotate(-150) scale(1.15)"/>
+    <use href="#leaf" transform="translate(296 44) rotate(-30) scale(1.15)"/>
+  </g>
+  <!-- Petites baies -->
+  <circle cx="232" cy="58" r="7" fill="#b8325a"/>
+  <circle cx="352" cy="58" r="7" fill="#b8325a"/>
+  <circle cx="380" cy="70" r="6" fill="#7cc04b"/>
+
+  <!-- Fruits et légumes -->
+  <g font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif" font-size="96" text-anchor="middle">
+    <text x="210" y="225" transform="rotate(-25 210 190)">🥕</text>
+    <text x="268" y="205">🍎</text>
+    <text x="345" y="190">🥦</text>
+    <text x="398" y="240">🍇</text>
+  </g>
+
+  <!-- Nom -->
+  <text x="300" y="345" text-anchor="middle" font-family="Arial Rounded MT Bold, Nunito, Varela Round, Verdana, sans-serif"
+        font-weight="900" font-size="100" letter-spacing="1" fill="url(#g)">ZINDO</text>
+  <use href="#leaf" fill="#4aa63b" transform="translate(432 270) rotate(-55) scale(.85)"/>
+
+  <!-- Slogan -->
+  <text x="300" y="392" text-anchor="middle" font-family="Arial Rounded MT Bold, Nunito, Verdana, sans-serif"
+        font-weight="700" font-size="25" letter-spacing="1.5" fill="#2e7d32">FRAÎCHEUR ET NATUREL</text>
+</svg>

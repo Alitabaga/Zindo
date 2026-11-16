@@ -1,0 +1,17 @@
+# Dépendances (réinstallées avec "npm install")
+node_modules/
+
+# Données de l'application : commandes, clients, photos. NE JAMAIS LES PUBLIER.
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Secrets
+.env
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
