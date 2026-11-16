@@ -30,7 +30,17 @@ const app = express();
 // Derrière l'hébergeur (proxy HTTPS) : pour connaître la vraie adresse IP des visiteurs
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
-app.get('/health', (req, res) => res.json({ ok: true }));
+const STARTED_AT = new Date().toISOString();
+app.get('/health', (req, res) => res.json({ ok: true, startedAt: STARTED_AT, proto: req.get('x-forwarded-proto') || null }));
+// En ligne : toujours passer en https (indispensable pour la géolocalisation sur téléphone).
+// L'hébergeur envoie « x-forwarded-proto: https » pour les visites sécurisées, et rien en http.
+// (/health est déclaré avant : il reste accessible sans redirection.)
+app.use((req, res, next) => {
+  if (IS_PROD && req.get('x-forwarded-proto') !== 'https') {
+    return res.redirect(301, `https://${req.get('host')}${req.originalUrl}`);
+  }
+  next();
+});
 app.use(express.json({ limit: '6mb' }));
 // no-cache : le navigateur revalide les fichiers à chaque visite,
 // pour que les clients aient toujours la dernière version après une mise à jour.
