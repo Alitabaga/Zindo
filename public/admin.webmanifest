@@ -1,6 +1,6 @@
 {
-  "name": "Zindo — Administration",
-  "short_name": "Zindo Admin",
+  "name": "Rummder — Administration",
+  "short_name": "Rummder Admin",
   "start_url": "/admin",
   "scope": "/admin",
   "display": "standalone",

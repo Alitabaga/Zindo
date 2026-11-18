@@ -1,4 +1,4 @@
-// ===== Zindo — côté client =====
+// ===== Rummder — côté client =====
 const $ = (s) => document.querySelector(s);
 const fmt = (n) => Number(n || 0).toLocaleString('fr-FR') + ' F';
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

@@ -1,4 +1,4 @@
-// ===== Zindo — administration =====
+// ===== Rummder — administration =====
 const $ = (s) => document.querySelector(s);
 const fmt = (n) => Number(n || 0).toLocaleString('fr-FR') + ' F';
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -23,7 +23,7 @@ function intlPhone(phone, cc) {
   return cc + d.replace(/^0+/, '');
 }
 const waLink = (phone, text) => `https://wa.me/${intlPhone(phone, settings?.country_code || '226')}?text=${encodeURIComponent(text)}`;
-const shopName = () => settings?.shop_name || 'Zindo';
+const shopName = () => settings?.shop_name || 'Rummder';
 const itemsText = (o) => o.items.map((i) => `• ${i.quantity} × ${i.name}`).join('\n');
 const WA = {
   confirm: (o) =>
@@ -527,7 +527,7 @@ $('#backupBtn').onclick = async () => {
   try {
     const r = await fetch('/api/admin/backup', { headers: { Authorization: `Bearer ${token}` } });
     if (!r.ok) throw new Error('Sauvegarde impossible');
-    const name = (/filename="?([^"]+)"?/.exec(r.headers.get('content-disposition') || '') || [])[1] || 'zindo-sauvegarde.db';
+    const name = (/filename="?([^"]+)"?/.exec(r.headers.get('content-disposition') || '') || [])[1] || 'rummder-sauvegarde.db';
     const url = URL.createObjectURL(await r.blob());
     const a = Object.assign(document.createElement('a'), { href: url, download: name });
     document.body.append(a); a.click(); a.remove();

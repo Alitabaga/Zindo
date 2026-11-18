@@ -1,7 +1,7 @@
 {
-  "name": "zindo",
+  "name": "rummder",
   "version": "1.0.0",
-  "description": "Zindo - commande de légumes préparés avec livraison optimisée",
+  "description": "Rummder - commande de légumes préparés avec livraison optimisée",
   "type": "module",
   "main": "server.js",
   "scripts": {

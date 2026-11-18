@@ -496,9 +496,9 @@ app.delete('/api/admin/messages/:id', (req, res) => {
 
 // ---------- Sauvegarde : copie complète de la base, téléchargeable ----------
 app.get('/api/admin/backup', (req, res) => {
-  const tmp = path.join(os.tmpdir(), `zindo-${Date.now()}-${crypto.randomBytes(3).toString('hex')}.db`);
+  const tmp = path.join(os.tmpdir(), `rummder-${Date.now()}-${crypto.randomBytes(3).toString('hex')}.db`);
   db.exec(`VACUUM INTO '${tmp.replace(/'/g, "''")}'`);
-  res.download(tmp, `zindo-sauvegarde-${localDate()}.db`, () => fs.rm(tmp, () => {}));
+  res.download(tmp, `rummder-sauvegarde-${localDate()}.db`, () => fs.rm(tmp, () => {}));
 });
 
 // ---------- Paramètres ----------
@@ -549,5 +549,5 @@ runPurge();
 setInterval(runPurge, 6 * 3600e3).unref();
 
 app.listen(PORT, HOST, () => {
-  console.log(`Zindo en ligne : http://localhost:${PORT}  (admin : http://localhost:${PORT}/admin)`);
+  console.log(`Rummder en ligne : http://localhost:${PORT}  (admin : http://localhost:${PORT}/admin)`);
 });

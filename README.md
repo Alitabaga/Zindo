@@ -1,9 +1,9 @@
-# Zindo — Fraîcheur et naturel
+# Rummder — Fraîcheur et naturel
 
 Site de commande de légumes préparés, avec espace admin : produits, commandes, tournée de livraison optimisée, ventes, service client.
 
-- **Boutique (clients)** : `https://votre-site/`
-- **Admin** : `https://votre-site/admin`
+- **Boutique (clients)** : https://zindo.alwaysdata.net
+- **Admin** : https://zindo.alwaysdata.net/admin
 
 ---
 

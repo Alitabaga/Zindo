@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" role="img" aria-label="Zindo — Fraîcheur et naturel">
-  <!-- Reconstitution vectorielle du logo Zindo (remplacée automatiquement par public/logo.png s'il existe) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" role="img" aria-label="Rummder — Fraîcheur et naturel">
+  <!-- Reconstitution vectorielle du logo Rummder (remplacée automatiquement par public/logo.png s'il existe) -->
   <defs>
     <path id="leaf" d="M0 0 C 8 -16 34 -18 46 0 C 34 18 8 16 0 0 Z"/>
     <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
@@ -41,8 +41,8 @@
 
   <!-- Nom -->
   <text x="300" y="345" text-anchor="middle" font-family="Arial Rounded MT Bold, Nunito, Varela Round, Verdana, sans-serif"
-        font-weight="900" font-size="100" letter-spacing="1" fill="url(#g)">ZINDO</text>
-  <use href="#leaf" fill="#4aa63b" transform="translate(432 270) rotate(-55) scale(.85)"/>
+        font-weight="900" font-size="80" letter-spacing="1" textLength="340" lengthAdjust="spacingAndGlyphs" fill="url(#g)">RUMMDER</text>
+  <use href="#leaf" fill="#4aa63b" transform="translate(458 282) rotate(-55) scale(.7)"/>
 
   <!-- Slogan -->
   <text x="300" y="392" text-anchor="middle" font-family="Arial Rounded MT Bold, Nunito, Verdana, sans-serif"
